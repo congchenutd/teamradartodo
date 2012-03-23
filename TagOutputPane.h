@@ -1,17 +1,17 @@
 #ifndef TODOOUTPUTPANE_H
 #define TODOOUTPUTPANE_H
 
-#include "Tag.h"
+#include "TagKeyword.h"
 #include <coreplugin/ioutputpane.h>
 #include <QListWidget>
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-class TodoOutputPane : public Core::IOutputPane
+class TagOutputPane : public Core::IOutputPane
 {
 public:
-	TodoOutputPane(QObject* parent);
-	~TodoOutputPane();
+	TagOutputPane(QObject* parent);
+	~TagOutputPane();
 
 	virtual QWidget* outputWidget(QWidget*) { return todoList; }
 	virtual QList<QWidget*> toolBarWidgets() const { return QList<QWidget*>(); }
@@ -30,7 +30,7 @@ public:
 	virtual void goToPrev();
 
 	void sort();
-	void addItem(const QString& text, const QString& filePath, int row, const Tag& tag);
+	void addItem(const QString& text, const QString& filePath, int row, const TagKeyword& tag);
 	QListWidget* getTodoList() const { return todoList; }
 
 public:
@@ -40,6 +40,6 @@ private:
 	QListWidget* todoList;
 };
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
 
 #endif // TODOOUTPUTPANE_H

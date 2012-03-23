@@ -1,6 +1,6 @@
 #include "TagDlg.h"
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
 TagDlg::TagDlg(QWidget* parent) : QDialog(parent) {
 	ui.setupUi(this);
@@ -33,4 +33,4 @@ void TagDlg::setIcon(const QString& iconType)
 	ui.listWidget->setCurrentRow(iconTypes.indexOf(iconType.toLower()));
 }
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar

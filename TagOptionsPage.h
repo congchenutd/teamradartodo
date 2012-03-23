@@ -3,16 +3,16 @@
 
 #include <QIcon>
 #include <coreplugin/dialogs/ioptionspage.h>
-#include "SettingDlg.h"
+#include "TagOptionsDlg.h"
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-class SettingPage: public Core::IOptionsPage
+class TagOptionsPage: public Core::IOptionsPage
 {
 	Q_OBJECT
 public:
 
-	SettingPage(QObject* parent = 0) : IOptionsPage(parent) {}
+	TagOptionsPage(QObject* parent = 0) : IOptionsPage(parent) {}
 
 	virtual QString id()              const { return "TodoSettingTab1_Setting"; }
 	virtual QString category()        const { return "TODO"; }
@@ -27,14 +27,14 @@ public slots:
 	void onSettingChanged();
 
 private:
-	SettingDlg* dialog;
+	TagOptionsDlg* dialog;
 	bool        settingDirty;
 };
 
-class AboutPage : public SettingPage
+class TagAboutPage : public TagOptionsPage
 {
 public:
-	AboutPage(QObject* parent = 0);
+	TagAboutPage(QObject* parent = 0);
 
 	QString  id() const { return tr("TodoSettingTab2_About"); }
 	QString  displayName() const { return tr("About"); }
@@ -42,6 +42,6 @@ public:
 	void apply() {}
 };
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
 
 #endif // SETTINGPAGE_H

@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "ui_TagDlg.h"
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
 class TagDlg : public QDialog
 {
@@ -23,6 +23,6 @@ private:
 	Ui::TagDlgClass ui;
 };
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
 
 #endif // KEYWORDDLG_H

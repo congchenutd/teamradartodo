@@ -1,26 +1,27 @@
-#include "SettingDlg.h"
+#include "TagOptionsDlg.h"
 #include "TagDlg.h"
-#include "TodoSetting.h"
+#include "TagSetting.h"
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-SettingDlg::SettingDlg(QWidget *parent) : QWidget(parent)
+TagOptionsDlg::TagOptionsDlg(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
 	connect(ui.btAdd,   SIGNAL(clicked()), this, SLOT(onAdd()));
 	connect(ui.btDel,   SIGNAL(clicked()), this, SLOT(onDel()));
 	connect(ui.btReset, SIGNAL(clicked()), this, SLOT(onReset()));
-	setTags(Setting::getInstance()->getTags());
+//	TodoSetting* setting = TodoSetting::getInstance();
+//	setTags(setting->getTags());
 }
 
-void SettingDlg::addTag(const Tag& keyword)
+void TagOptionsDlg::addTag(const TagKeyword& keyword)
 {
 	QListWidgetItem* item = new QListWidgetItem(keyword.icon, keyword.name);
 	item->setBackgroundColor(keyword.bgColor);
 	ui.listWidgetTags->addItem(item);
 }
 
-void SettingDlg::setTags(const TagList& tagList)
+void TagOptionsDlg::setTags(const TagKeywords& tagList)
 {
 	if(tagList.isEmpty())
 	{
@@ -28,43 +29,43 @@ void SettingDlg::setTags(const TagList& tagList)
 		return;
 	}
 
-	foreach(const Tag& tag, tagList)
+	foreach(const TagKeyword& tag, tagList)
 		addTag(tag);
 }
 
-TagList SettingDlg::getTags()
+TagKeywords TagOptionsDlg::getTags()
 {
-	TagList result;
+	TagKeywords result;
 	for(int i = 0; i < ui.listWidgetTags->count(); ++i)
-		result.append(Tag(ui.listWidgetTags->item(i)->text(),
+		result.append(TagKeyword(ui.listWidgetTags->item(i)->text(),
 						  ui.listWidgetTags->item(i)->icon(),
 						  ui.listWidgetTags->item(i)->backgroundColor()));
 	return result;
 }
 
-void SettingDlg::onAdd()
+void TagOptionsDlg::onAdd()
 {
 	TagDlg dlg(this);
 	if(dlg.exec() == QDialog::Accepted)
 	{
-		addTag(Tag(dlg.getName(),
+		addTag(TagKeyword(dlg.getName(),
 				   dlg.getIcon(),
 				   dlg.getColor()));
 		emit settingChanged();
 	}
 }
 
-void SettingDlg::onDel()
+void TagOptionsDlg::onDel()
 {
 	ui.listWidgetTags->takeItem(ui.listWidgetTags->currentRow());
 	emit settingChanged();
 }
 
-void SettingDlg::onReset()
+void TagOptionsDlg::onReset()
 {
 	ui.listWidgetTags->clear();                         // clear the list
-	setTags(Setting::getInstance()->getDefaultTags());  // add default tags
+	setTags(TagSetting::getInstance()->getDefaultTags());  // add default tags
 	emit settingChanged();
 }
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
