@@ -2,21 +2,21 @@
 #define SETTINGDLG_H
 
 #include <QWidget>
-#include "keyword.h"
+#include "Tag.h"
 #include "ui_SettingDlg.h"
 
 class SettingDlg : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SettingDlg(QWidget* parent = 0);
 
-	KeywordList getKeywords();
-	void setKeywordsList(const KeywordList& list);
+	TagList getTags();
+	void setTags(const TagList& list);
 
 private:
-	void addKeyword(const Keyword& keyword);
+	void addTag(const Tag& keyword);
 
 signals:
 	void settingChanged();

@@ -15,6 +15,8 @@ void ColorLabel::setColor(const QColor& clr)
 	}
 }
 
-void ColorLabel::mousePressEvent(QMouseEvent *) {
-	setColor(QColorDialog::getColor(color));
+void ColorLabel::mousePressEvent(QMouseEvent* event)
+{
+	setColor(QColorDialog::getColor(color));   // open a color dialog
+	QLabel::mousePressEvent(event);
 }
