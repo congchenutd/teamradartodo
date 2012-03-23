@@ -1,5 +1,5 @@
 #include "SettingDlg.h"
-#include "KeywordDlg.h"
+#include "TagDlg.h"
 #include "Setting.h"
 
 SettingDlg::SettingDlg(QWidget *parent) : QWidget(parent)
@@ -8,65 +8,59 @@ SettingDlg::SettingDlg(QWidget *parent) : QWidget(parent)
 	connect(ui.btAdd,   SIGNAL(clicked()), this, SLOT(onAdd()));
 	connect(ui.btDel,   SIGNAL(clicked()), this, SLOT(onDel()));
 	connect(ui.btReset, SIGNAL(clicked()), this, SLOT(onReset()));
-	setKeywordsList(Setting::getInstance()->getKeywords());
+	setTags(Setting::getInstance()->getTags());
 }
 
-void SettingDlg::addKeyword(const Keyword& keyword)
+void SettingDlg::addTag(const Tag& keyword)
 {
 	QListWidgetItem* item = new QListWidgetItem(keyword.icon, keyword.name);
-    item->setBackgroundColor(keyword.warningColor);
-	ui.keywords->addItem(item);
+	item->setBackgroundColor(keyword.bgColor);
+	ui.listWidgetTags->addItem(item);
 }
 
-void SettingDlg::setKeywordsList(const KeywordList& list)
+void SettingDlg::setTags(const TagList& tagList)
 {
-	if(list.isEmpty()) {
+	if(tagList.isEmpty())
+	{
 		onReset();
-    }
-	else {
-		for(int i = 0; i < list.count(); ++i)
-			addKeyword(list.at(i));
-    }
+		return;
+	}
+
+	foreach(const Tag& tag, tagList)
+		addTag(tag);
 }
 
-KeywordList SettingDlg::getKeywords()
+TagList SettingDlg::getTags()
 {
-	KeywordList result;
-	for (int i = 0; i < ui.keywords->count(); ++i)
-		result.append(Keyword(ui.keywords->item(i)->text(),
-							  ui.keywords->item(i)->icon(),
-							  ui.keywords->item(i)->backgroundColor()));
+	TagList result;
+	for(int i = 0; i < ui.listWidgetTags->count(); ++i)
+		result.append(Tag(ui.listWidgetTags->item(i)->text(),
+						  ui.listWidgetTags->item(i)->icon(),
+						  ui.listWidgetTags->item(i)->backgroundColor()));
 	return result;
 }
 
 void SettingDlg::onAdd()
 {
-	KeywordDlg dlg(this);
+	TagDlg dlg(this);
 	if(dlg.exec() == QDialog::Accepted)
-    {
-		addKeyword(Keyword(dlg.getName(),
-						   dlg.getIcon(),
-						   dlg.getColor()));
+	{
+		addTag(Tag(dlg.getName(),
+				   dlg.getIcon(),
+				   dlg.getColor()));
 		emit settingChanged();
-    }
+	}
 }
 
 void SettingDlg::onDel()
 {
-	ui.keywords->takeItem(ui.keywords->currentRow());
+	ui.listWidgetTags->takeItem(ui.listWidgetTags->currentRow());
 	emit settingChanged();
 }
 
 void SettingDlg::onReset()
 {
-	ui.keywords->clear();
-	addKeyword(Keyword("NOTE",     QIcon(":/Images/Information"), QColor("#E2DFFF")));
-	addKeyword(Keyword("INFO",     QIcon(":/Images/Information"), QColor("#E2DFFF")));
-	addKeyword(Keyword("TODO",     QIcon(":/Images/Todo"),        QColor("#BFFFC8")));
-	addKeyword(Keyword("WARNING",  QIcon(":/Images/Warning"),     QColor("#FFFFAA")));
-	addKeyword(Keyword("FIXME",    QIcon(":/Images/Bug"),         QColor("#FFDFDF")));
-	addKeyword(Keyword("BUG",      QIcon(":/Images/Bug"),         QColor("#FFDFDF")));
-	addKeyword(Keyword("Critical", QIcon(":/Images/Critical"),    QColor("#FFBFBF")));
-
+	ui.listWidgetTags->clear();                         // clear the list
+	setTags(Setting::getInstance()->getDefaultTags());  // add default tags
 	emit settingChanged();
 }

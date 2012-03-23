@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QColor>
 
+// A label for choosing color
+// click to open a color dialog
 class ColorLabel : public QLabel
 {
 	Q_OBJECT

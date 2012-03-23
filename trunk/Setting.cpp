@@ -1,4 +1,5 @@
 #include "Setting.h"
+#include <QResource>
 
 Setting::Setting(const QString& fileName) : MySetting<Setting>(fileName)
 {
@@ -6,23 +7,35 @@ Setting::Setting(const QString& fileName) : MySetting<Setting>(fileName)
 		loadDefaults();
 }
 
-void Setting::setKeywords(const KeywordList& keywords) {
-	setValue("keywords", qVariantFromValue(keywords));
+void Setting::setTags(const TagList& tags) {
+	setValue("Tags", qVariantFromValue(tags));
 }
 
-KeywordList Setting::getKeywords() const {
-	return value("keywords").value<KeywordList>();
+TagList Setting::getTags() const {
+	return value("Tags").value<TagList>();
 }
 
-void Setting::loadDefaults()
+TagList Setting::getDefaultTags() const
 {
-	KeywordList defaultKeywords;
-	defaultKeywords << Keyword("NOTE",     QIcon(":/Images/Information"), QColor("#E2DFFF"));
-	defaultKeywords << Keyword("INFO",     QIcon(":/Images/Information"), QColor("#E2DFFF"));
-	defaultKeywords << Keyword("TODO",     QIcon(":/Images/Todo"),        QColor("#BFFFC8"));
-	defaultKeywords << Keyword("WARNING",  QIcon(":/Images/Warning"),     QColor("#FFFFAA"));
-	defaultKeywords << Keyword("FIXME",    QIcon(":/Images/Bug"),         QColor("#FFDFDF"));
-	defaultKeywords << Keyword("BUG",      QIcon(":/Images/Bug"),         QColor("#FFDFDF"));
-	defaultKeywords << Keyword("Critical", QIcon(":/Images/Critical"),    QColor("#FFBFBF"));
-	setKeywords(defaultKeywords);
+	TagList result;
+	result << Tag("NOTE",     QIcon(":/Images/Information"), QColor("#E2DFFF"));
+	result << Tag("INFO",     QIcon(":/Images/Information"), QColor("#E2DFFF"));
+	result << Tag("TODO",     QIcon(":/Images/Todo"),        QColor("#BFFFC8"));
+	result << Tag("WARNING",  QIcon(":/Images/Warning"),     QColor("#FFFFAA"));
+	result << Tag("FIXME",    QIcon(":/Images/Bug"),         QColor("#FFDFDF"));
+	result << Tag("BUG",      QIcon(":/Images/Bug"),         QColor("#FFDFDF"));
+	result << Tag("Critical", QIcon(":/Images/Critical"),    QColor("#FFBFBF"));
+	return result;
+}
+
+void Setting::loadDefaults() {
+	setTags(getDefaultTags());
+}
+
+QString Setting::getCompileDate() const
+{
+	// this resource file will be generated after running CompileDate.bat
+	QResource resource(":/CompileDate.txt");
+	QString result = (char*)resource.data();
+	return result.isEmpty() ? "Unknown" : result;
 }

@@ -9,13 +9,13 @@
 #include <projectexplorer/projectexplorer.h>
 #include <projectexplorer/project.h>
 #include "todooutputpane.h"
-#include "keyword.h"
+#include "Tag.h"
 
 class TodoPlugin : public ExtensionSystem::IPlugin
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    TodoPlugin();
+	TodoPlugin();
 	virtual void extensionsInitialized() {}
 	virtual bool initialize(const QStringList& arguments, QString* errorString);
 
@@ -28,17 +28,17 @@ public slots:
 private:
 	void readFile(const QString& filePath);
 
-	QRegExp generatePattern(const Keyword& keyword);
-	Keyword findMatchingKeyword(const QString& line);
-	void    formatLine(QString& line, const Keyword& keyword);
+	QRegExp generatePattern(const Tag& tag);
+	Tag findMatchingTag(const QString& line);
+	void formatLine(QString& line, const Tag& tag);
 
 	static void readCurrentProject(QFutureInterface<void>& future, TodoPlugin* instance);
 
 private:
 	TodoOutputPane*           outPane;
 	ProjectExplorer::Project* currentProject;
-	KeywordList keywords;
-	bool         reading;
+	TagList tags;
+	bool    reading;
 };
 #endif // TODOPLUGIN_H
- 
+

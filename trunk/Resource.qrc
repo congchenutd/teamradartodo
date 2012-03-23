@@ -6,5 +6,6 @@
         <file>Images/Todo.png</file>
         <file>Images/Warning.png</file>
         <file>Images/Critical.png</file>
+        <file>CompileDate.txt</file>
     </qresource>
 </RCC>

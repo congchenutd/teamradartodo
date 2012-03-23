@@ -16,30 +16,30 @@ LIBS += -L$$IDE_LIBRARY_PATH \
 INCLUDEPATH += ../MySetting
 
 HEADERS += \
-    KeywordDlg.h \
     ColorLabel.h \
     SettingDlg.h \
     SettingPage.h \
     TodoOutputPane.h \
     TodoPlugin.h \
-    Keyword.h \
     ../MySetting/MySetting.h \
-    Setting.h
+    Setting.h \
+    Tag.h \
+    TagDlg.h
 
 SOURCES += \
-    KeywordDlg.cpp \
     ColorLabel.cpp \
     SettingDlg.cpp \
     SettingPage.cpp \
     TodoOutputPane.cpp \
     TodoPlugin.cpp \
-    Keyword.cpp \
-    Setting.cpp
+    Setting.cpp \
+    Tag.cpp \
+    TagDlg.cpp
 
 RESOURCES += Resource.qrc
 
 FORMS += \
-    KeywordDlg.ui \
-    SettingDlg.ui
+    SettingDlg.ui \
+    TagDlg.ui
 
 OTHER_FILES += Todo.pluginspec

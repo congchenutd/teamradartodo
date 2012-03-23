@@ -1,89 +1,77 @@
 #include "TodoOutputPane.h"
-#include <QListWidgetItem>
+#include <QListWidget>
 #include <QFileInfo>
 
-TodoOutputPane::TodoOutputPane(QObject *parent) : IOutputPane(parent)
-{
+TodoOutputPane::TodoOutputPane(QObject* parent) : IOutputPane(parent) {
 	todoList = new QListWidget;
-    todoList->setFlow(QListView::TopToBottom);
-    todoList->setFrameStyle(QFrame::NoFrame);
-    lastCurrentRow = 0;
 }
 
 TodoOutputPane::~TodoOutputPane() {
-    delete todoList;
+	delete todoList;
 }
 
-void TodoOutputPane::addItem(const QString& text, const QString& filePath, int row,
-							 const QIcon& icon, const QColor& color)
+void TodoOutputPane::addItem(const QString& text, const QString& filePath, int row, const Tag& tag)
 {
 	QListWidgetItem* item = new QListWidgetItem;
-	item->setIcon(icon);
-	item->setBackgroundColor(color);
-	item->setData(FilePathRole, filePath);
+	item->setIcon(tag.icon);
+	item->setBackgroundColor(tag.bgColor);
+	item->setData(FilePathRole,   filePath);   // hide meta data here
 	item->setData(LineNumberRole, row);
 	item->setToolTip(filePath + ":" + QString::number(row));
-	item->setText(QFileInfo(filePath).fileName() + ":" + QString::number(row) + ": " + text);
+	item->setText(text + " (" + QFileInfo(filePath).fileName() + ":" + QString::number(row) + ") ");
 	todoList->addItem(item);
 }
 
+// clear all
 void TodoOutputPane::clearContents() {
-    todoList->clear();
+	todoList->clear();
 }
 
-void TodoOutputPane::clearContents(const QString& filename)
+// only clear items from the file
+void TodoOutputPane::clearContents(const QString& filePath)
 {
-	int i = 0;
-	lastCurrentRow = 0;
-	while(i < todoList->count())
+	for(int i = 0; i < todoList->count();)
 	{
-		if(!filename.compare(todoList->item(i)->data(FilePathRole).toString()))
-		{
-			if(lastCurrentRow == 0)
-				lastCurrentRow = todoList->currentRow();
+		QString storedPath = todoList->item(i)->data(FilePathRole).toString();
+		if(filePath.compare(storedPath, Qt::CaseInsensitive) == 0)
 			todoList->takeItem(i);   // remove row
-		}
-		else {
+		else
 			i ++;
-		}
 	}
 }
 
 void TodoOutputPane::visibilityChanged(bool visible) {
-    todoList->setVisible(visible);
+	todoList->setVisible(visible);
 }
 
 void TodoOutputPane::setFocus() {
-    todoList->setFocus();
+	todoList->setFocus();
 }
 
 bool TodoOutputPane::hasFocus() const {
-    return todoList->hasFocus();
+	return todoList->hasFocus();
 }
 
 bool TodoOutputPane::canNavigate() const {
-    return todoList->count() > 1;
+	return todoList->count() > 1;
 }
 
 bool TodoOutputPane::canNext() const {
-    return todoList->currentRow() < todoList->count() && todoList->count() > 1;
+	return todoList->currentRow() < todoList->count() && todoList->count() > 1;
 }
 
 bool TodoOutputPane::canPrevious() const {
-    return todoList->currentRow() > 0 && todoList->count() > 1;
+	return todoList->currentRow() > 0 && todoList->count() > 1;
 }
 
 void TodoOutputPane::goToNext() {
-    todoList->setCurrentRow(todoList->currentRow() + 1);
+	todoList->setCurrentRow(todoList->currentRow() + 1);
 }
 
 void TodoOutputPane::goToPrev() {
-    todoList->setCurrentRow(todoList->currentRow() - 1);
+	todoList->setCurrentRow(todoList->currentRow() - 1);
 }
 
-void TodoOutputPane::sort()
-{
-    todoList->sortItems(Qt::AscendingOrder);
-//    if (todoList->count() > 0)
-//        todoList->setCurrentRow(lastCurrentRow < todoList->count() ? lastCurrentRow : todoList->count() - 1);
+void TodoOutputPane::sort() {
+	todoList->sortItems(Qt::AscendingOrder);
 }

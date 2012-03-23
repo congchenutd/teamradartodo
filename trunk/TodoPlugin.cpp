@@ -18,20 +18,20 @@
 
 TodoPlugin::TodoPlugin()
 {
-    qRegisterMetaTypeStreamOperators<Keyword>("Keyword");
-	qRegisterMetaTypeStreamOperators<KeywordList>("KeywordsList");
+	qRegisterMetaTypeStreamOperators<Tag>("Tag");
+	qRegisterMetaTypeStreamOperators<TagList>("TagList");
 }
 
 bool TodoPlugin::initialize(const QStringList& args, QString *errMsg)
 {
-    Q_UNUSED(args);
-    Q_UNUSED(errMsg);
+	Q_UNUSED(args);
+	Q_UNUSED(errMsg);
 	currentProject = 0;
 	reading = false;
 
-	keywords = Setting::getInstance()->getKeywords();
-	SettingPage* settingPage = new SettingPage(this);
-	addAutoReleasedObject(settingPage);
+	tags = Setting::getInstance()->getTags();
+	addAutoReleasedObject(new SettingPage(this));
+	addAutoReleasedObject(new AboutPage(this));
 
 	outPane = new TodoOutputPane(this);
 	addAutoReleasedObject(outPane);
@@ -39,25 +39,25 @@ bool TodoPlugin::initialize(const QStringList& args, QString *errMsg)
 	connect(outPane->getTodoList(), SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onGotoRow(QListWidgetItem*)));
 
 	connect(Core::EditorManager::instance(), SIGNAL(currentEditorChanged(Core::IEditor*)), this, SLOT(onCurrentEditorChanged(Core::IEditor*)));
-	connect(ProjectExplorer::ProjectExplorerPlugin::instance(), SIGNAL(currentProjectChanged(ProjectExplorer::Project*)), this, SLOT(onProjectChanged(ProjectExplorer::Project *)));
-    return true;
+	connect(ProjectExplorer::ProjectExplorerPlugin::instance(), SIGNAL(currentProjectChanged(ProjectExplorer::Project*)), this, SLOT(onProjectChanged(ProjectExplorer::Project*)));
+	return true;
 }
 
 void TodoPlugin::onGotoRow(QListWidgetItem* item)
 {
 	QString filePath = item->data(TodoOutputPane::FilePathRole).toString();
 	if(QFileInfo(filePath).exists())
-    {
+	{
 		Core::IEditor* editor = Core::EditorManager::instance()->openEditor(filePath);
 		int row = item->data(TodoOutputPane::LineNumberRole).toInt();
-        editor->gotoLine(row);
-    }
+		editor->gotoLine(row);
+	}
 }
 
 void TodoPlugin::onCurrentEditorChanged(Core::IEditor* editor)
 {
-	if(reading || !editor)
-        return;
+	if(reading || editor == 0)
+		return;
 
 	connect(editor->file(), SIGNAL(changed()), this, SLOT(onFileChanged()));
 }
@@ -65,29 +65,29 @@ void TodoPlugin::onCurrentEditorChanged(Core::IEditor* editor)
 void TodoPlugin::onFileChanged()
 {
 	if(Core::IFile* file = dynamic_cast<Core::IFile*>(sender()))
-    {
+	{
 		outPane->clearContents(file->fileName());
-        readFile(file->fileName());
-    }
+		readFile(file->fileName());
+	}
 }
 
-QRegExp TodoPlugin::generatePattern(const Keyword& keyword) {
-	return QRegExp("//\\s*" + keyword.name + "(:|\\s)", Qt::CaseInsensitive);
+QRegExp TodoPlugin::generatePattern(const Tag& tag) {
+	return QRegExp("//\\s*" + tag.name + "(:|\\s)", Qt::CaseInsensitive);
 }
 
-Keyword TodoPlugin::findMatchingKeyword(const QString &line)
+Tag TodoPlugin::findMatchingTag(const QString& line)
 {
-	foreach(const Keyword& keyword, keywords)
-		if(line.contains(generatePattern(keyword)))
-			return keyword;
-	return Keyword();
+	foreach(const Tag& tag, tags)
+		if(line.contains(generatePattern(tag)))
+			return tag;
+	return Tag();
 }
 
-void TodoPlugin::formatLine(QString& line, const Keyword& keyword)
+void TodoPlugin::formatLine(QString& line, const Tag& tag)
 {
 	line.replace("\n", "");
 	line.replace("\r", "");
-	line.replace(generatePattern(keyword), keyword.name + ": ");
+	line.replace(generatePattern(tag), tag.name + ": ");
 	line = line.trimmed();
 	line = QTextCodec::codecForLocale()->toUnicode(line.toAscii());
 }
@@ -99,29 +99,29 @@ void TodoPlugin::readFile(const QString& filePath)
 		return;
 
 	for(int lineNumber = 1; !file.atEnd(); ++lineNumber)
-    {
+	{
 		QString line = file.readLine();
-		Keyword keyword = findMatchingKeyword(line);
-		if(keyword.isValid())
+		Tag tag = findMatchingTag(line);
+		if(tag.isValid())
 		{
-			formatLine(line, keyword);
-			outPane->addItem(line, filePath, lineNumber, keyword.icon, keyword.warningColor);
+			formatLine(line, tag);
+			outPane->addItem(line, filePath, lineNumber, tag);
 			if(!reading)
 				outPane->sort();
 		}
-    }
+	}
 }
 
 void TodoPlugin::onProjectChanged(ProjectExplorer::Project* project)
 {
-	if(!project || reading)
-        return;
+	if(project == 0 || reading)
+		return;
 
 	currentProject = project;
 	outPane->clearContents();
 
 	reading = true;
-    QFuture<void> result = QtConcurrent::run(&TodoPlugin::readCurrentProject, this);
+	QFuture<void> result = QtConcurrent::run(&TodoPlugin::readCurrentProject, this);
 	Core::ICore::instance()->progressManager()->addTask(result, tr("TodoScan"), "Todo.Plugin.Scanning");
 }
 
@@ -129,18 +129,18 @@ void TodoPlugin::readCurrentProject(QFutureInterface<void>& future, TodoPlugin* 
 {
 	QStringList filesList = instance->currentProject->files(
 								ProjectExplorer::Project::ExcludeGeneratedFiles);
-    future.setProgressRange(0, filesList.count()-1);
+	future.setProgressRange(0, filesList.count()-1);
 	for(int i = 0; i < filesList.count(); ++i)
-    {
-        instance->readFile(filesList.at(i));
-        future.setProgressValue(i);
-    }
+	{
+		instance->readFile(filesList.at(i));
+		future.setProgressValue(i);
+	}
 
 	instance->outPane->sort();
 	instance->reading = false;
-    future.reportFinished();
+	future.reportFinished();
 }
 
 Q_EXPORT_PLUGIN(TodoPlugin)
 
- 
+

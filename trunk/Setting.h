@@ -2,14 +2,16 @@
 #define SETTING_H
 
 #include "MySetting.h"
-#include "Keyword.h"
+#include "Tag.h"
 
 class Setting : public MySetting<Setting>
 {
 public:
 	Setting(const QString& fileName);
-	void setKeywords(const KeywordList& keywords);
-	KeywordList getKeywords() const;
+	void setTags(const TagList& tags);
+	TagList getTags() const;
+	TagList getDefaultTags() const;
+	QString getCompileDate() const;
 
 private:
 	void loadDefaults();

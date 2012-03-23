@@ -17,13 +17,13 @@ QWidget* SettingPage::createPage(QWidget* parent)
 void SettingPage::apply()
 {
 	if(settingDirty)
-    {
-		Setting::getInstance()->setKeywords(dialog->getKeywords());
+	{
+		Setting::getInstance()->setTags(dialog->getTags());
 
 		QMessageBox::information(dialog, tr("Information"),
 								 tr("The TODO plugin settings change will take effect after a restart of Qt Creator."));
 		settingDirty = false;
-    }
+	}
 }
 
 void SettingPage::onSettingChanged() {
@@ -37,11 +37,11 @@ QWidget* AboutPage::createPage(QWidget* parent)
 {
 	QWidget* widget = new QWidget(parent);
 	QLabel* label = new QLabel(tr(
-		"<H1 align=\"center\">Team Radar</H1>"
-		"<P align=\"center\">A continuous awareness plugin</P>"
+		"<H1 align=\"center\">Todo</H1>"
+		"<P align=\"center\">Capturing high-leve awareness with tags</P>"
 		"<P align=\"center\">Cong Chen &lt;CongChenUTD@Gmail.com&gt;</P>"
 		"<P align=\"center\">Built on %1</P>")
-							   .arg("XXX"), widget);
+							   .arg(Setting::getInstance()->getCompileDate()), widget);
 	QHBoxLayout* layout = new QHBoxLayout(widget);
 	layout->addWidget(label);
 	return widget;

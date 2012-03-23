@@ -7,12 +7,12 @@
 
 class SettingPage: public Core::IOptionsPage
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 
 	SettingPage(QObject* parent = 0) : IOptionsPage(parent) {}
 
-	virtual QString id()              const { return "TodoSetting"; }
+	virtual QString id()              const { return "TodoSettingTab1_Setting"; }
 	virtual QString category()        const { return "TODO"; }
 	virtual QString displayName()     const { return "TODO"; }
 	virtual QString displayCategory() const { return "TODO"; }
@@ -34,7 +34,7 @@ class AboutPage : public SettingPage
 public:
 	AboutPage(QObject* parent = 0);
 
-	QString  id() const { return tr("About"); }
+	QString  id() const { return tr("TodoSettingTab2_About"); }
 	QString  displayName() const { return tr("About"); }
 	QWidget* createPage(QWidget* parent);
 	void apply() {}
