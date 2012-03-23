@@ -1,45 +1,48 @@
 TEMPLATE = lib
 TARGET = TODO
-PROVIDER = CongChen
 QT += network
 
-include(EV.pri)
-include($$IDE_SOURCE_TREE/src/qtcreatorplugin.pri)
-include($$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri)
-include($$IDE_SOURCE_TREE/src/plugins/projectexplorer/projectexplorer.pri)
-include($$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri)
+#include(../TeamRadar/TeamRadar.pri)
+include(Todo_dependencies.pri)
 
 LIBS += -L$$IDE_LIBRARY_PATH \
 		-L$$IDE_PLUGIN_PATH/Nokia \
-		-L$$IDE_SOURCE_TREE/lib/qtcreator
+		-L$$IDE_PLUGIN_PATH/CongChen
 
-INCLUDEPATH += ../MySetting
+INCLUDEPATH += ../MySetting \
+	../TeamRadar
 
 HEADERS += \
-    ColorLabel.h \
-    SettingDlg.h \
-    SettingPage.h \
-    TodoOutputPane.h \
-    TodoPlugin.h \
-    ../MySetting/MySetting.h \
-    Setting.h \
-    Tag.h \
-    TagDlg.h
+	ColorLabel.h \
+	SettingDlg.h \
+	SettingPage.h \
+	TodoOutputPane.h \
+	TodoPlugin.h \
+	Tag.h \
+	TagDlg.h \
+	Communicator.h \
+	../TeamRadar/Connection.h \
+	../TeamRadar/TeamRadarEvent.h \
+    ../TeamRadar/Setting.h \
+    TodoSetting.h
 
 SOURCES += \
-    ColorLabel.cpp \
-    SettingDlg.cpp \
-    SettingPage.cpp \
-    TodoOutputPane.cpp \
-    TodoPlugin.cpp \
-    Setting.cpp \
-    Tag.cpp \
-    TagDlg.cpp
+	ColorLabel.cpp \
+	SettingDlg.cpp \
+	SettingPage.cpp \
+	TodoOutputPane.cpp \
+	TodoPlugin.cpp \
+	Tag.cpp \
+	TagDlg.cpp \
+	Communicator.cpp \
+	../TeamRadar/Connection.cpp \
+    ../TeamRadar/Setting.cpp \
+    TodoSetting.cpp
 
 RESOURCES += Resource.qrc
 
 FORMS += \
-    SettingDlg.ui \
-    TagDlg.ui
+	SettingDlg.ui \
+	TagDlg.ui
 
 OTHER_FILES += Todo.pluginspec

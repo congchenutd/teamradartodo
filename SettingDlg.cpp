@@ -1,6 +1,8 @@
 #include "SettingDlg.h"
 #include "TagDlg.h"
-#include "Setting.h"
+#include "TodoSetting.h"
+
+namespace TeamRadarTag {
 
 SettingDlg::SettingDlg(QWidget *parent) : QWidget(parent)
 {
@@ -64,3 +66,5 @@ void SettingDlg::onReset()
 	setTags(Setting::getInstance()->getDefaultTags());  // add default tags
 	emit settingChanged();
 }
+
+}  // namespace TeamRadarTag

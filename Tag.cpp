@@ -1,5 +1,7 @@
 #include "Tag.h"
 
+namespace TeamRadarTag {
+
 QDataStream& operator<<(QDataStream& os, const Tag& tag)
 {
 	os << tag.name;
@@ -15,3 +17,5 @@ QDataStream& operator>>(QDataStream& is,  Tag& tag)
 	is >> tag.bgColor;
 	return is;
 }
+
+}  // namespace TeamRadarTag

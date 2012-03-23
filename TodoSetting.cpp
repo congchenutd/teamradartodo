@@ -1,5 +1,7 @@
-#include "Setting.h"
+#include "TodoSetting.h"
 #include <QResource>
+
+namespace TeamRadarTag {
 
 Setting::Setting(const QString& fileName) : MySetting<Setting>(fileName)
 {
@@ -39,3 +41,5 @@ QString Setting::getCompileDate() const
 	QString result = (char*)resource.data();
 	return result.isEmpty() ? "Unknown" : result;
 }
+
+}  // namespace TeamRadarTag

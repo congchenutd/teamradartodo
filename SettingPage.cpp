@@ -1,9 +1,11 @@
 #include "SettingPage.h"
-#include "Setting.h"
+#include "TodoSetting.h"
 #include <coreplugin/icore.h>
 #include <QList>
 #include <QMessageBox>
 #include <QLabel>
+
+namespace TeamRadarTag {
 
 QWidget* SettingPage::createPage(QWidget* parent)
 {
@@ -46,3 +48,5 @@ QWidget* AboutPage::createPage(QWidget* parent)
 	layout->addWidget(label);
 	return widget;
 }
+
+}  // namespace TeamRadarTag

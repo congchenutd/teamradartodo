@@ -5,6 +5,8 @@
 #include <coreplugin/ioutputpane.h>
 #include <QListWidget>
 
+namespace TeamRadarTag {
+
 class TodoOutputPane : public Core::IOutputPane
 {
 public:
@@ -37,5 +39,7 @@ public:
 private:
 	QListWidget* todoList;
 };
+
+}  // namespace TeamRadarTag
 
 #endif // TODOOUTPUTPANE_H

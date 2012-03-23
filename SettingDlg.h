@@ -5,6 +5,8 @@
 #include "Tag.h"
 #include "ui_SettingDlg.h"
 
+namespace TeamRadarTag {
+
 class SettingDlg : public QWidget
 {
 	Q_OBJECT
@@ -29,5 +31,7 @@ private slots:
 private:
 	Ui::SettingDlgClass ui;
 };
+
+}  // namespace TeamRadarTag
 
 #endif // SETTINGDLG_H

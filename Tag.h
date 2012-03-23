@@ -7,6 +7,8 @@
 #include <QList>
 #include <QMetaType>
 
+namespace TeamRadarTag {
+
 class Tag
 {
 public:
@@ -26,5 +28,7 @@ QDataStream& operator>>(QDataStream& in,  Tag& tag);
 
 Q_DECLARE_METATYPE(TagList)
 Q_DECLARE_METATYPE(Tag)
+
+}  // namespace TeamRadarTag
 
 #endif // TAG_H

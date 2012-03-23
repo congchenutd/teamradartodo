@@ -1,6 +1,7 @@
 #include "TodoPlugin.h"
 #include "SettingPage.h"
-#include "Setting.h"
+#include "TodoSetting.h"
+#include "Communicator.h"
 #include <coreplugin/icore.h>
 #include <coreplugin/ifile.h>
 #include <coreplugin/editormanager/editormanager.h>
@@ -16,13 +17,15 @@
 #include <QSettings>
 #include <QTextCodec>
 
+namespace TeamRadarTag {
+
 TodoPlugin::TodoPlugin()
 {
 	qRegisterMetaTypeStreamOperators<Tag>("Tag");
 	qRegisterMetaTypeStreamOperators<TagList>("TagList");
 }
 
-bool TodoPlugin::initialize(const QStringList& args, QString *errMsg)
+bool TodoPlugin::initialize(const QStringList& args, QString* errMsg)
 {
 	Q_UNUSED(args);
 	Q_UNUSED(errMsg);
@@ -37,6 +40,8 @@ bool TodoPlugin::initialize(const QStringList& args, QString *errMsg)
 	addAutoReleasedObject(outPane);
 	connect(outPane->getTodoList(), SIGNAL(itemClicked(QListWidgetItem*)),   this, SLOT(onGotoRow(QListWidgetItem*)));
 	connect(outPane->getTodoList(), SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onGotoRow(QListWidgetItem*)));
+
+	communicator = new Communicator(this);
 
 	connect(Core::EditorManager::instance(), SIGNAL(currentEditorChanged(Core::IEditor*)), this, SLOT(onCurrentEditorChanged(Core::IEditor*)));
 	connect(ProjectExplorer::ProjectExplorerPlugin::instance(), SIGNAL(currentProjectChanged(ProjectExplorer::Project*)), this, SLOT(onProjectChanged(ProjectExplorer::Project*)));
@@ -106,6 +111,7 @@ void TodoPlugin::readFile(const QString& filePath)
 		{
 			formatLine(line, tag);
 			outPane->addItem(line, filePath, lineNumber, tag);
+			communicator->sendTaggingEvent(line, filePath, lineNumber);
 			if(!reading)
 				outPane->sort();
 		}
@@ -141,6 +147,8 @@ void TodoPlugin::readCurrentProject(QFutureInterface<void>& future, TodoPlugin* 
 	future.reportFinished();
 }
 
-Q_EXPORT_PLUGIN(TodoPlugin)
+}  // namespace TeamRadarTag
+
+Q_EXPORT_PLUGIN(TeamRadarTag::TodoPlugin)
 
 
