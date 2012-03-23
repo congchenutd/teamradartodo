@@ -2,6 +2,8 @@
 #include <QListWidget>
 #include <QFileInfo>
 
+namespace TeamRadarTag {
+
 TodoOutputPane::TodoOutputPane(QObject* parent) : IOutputPane(parent) {
 	todoList = new QListWidget;
 }
@@ -75,3 +77,5 @@ void TodoOutputPane::goToPrev() {
 void TodoOutputPane::sort() {
 	todoList->sortItems(Qt::AscendingOrder);
 }
+
+}  // namespace TeamRadarTag

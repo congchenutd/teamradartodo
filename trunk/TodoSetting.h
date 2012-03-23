@@ -4,6 +4,8 @@
 #include "MySetting.h"
 #include "Tag.h"
 
+namespace TeamRadarTag {
+
 class Setting : public MySetting<Setting>
 {
 public:
@@ -16,5 +18,7 @@ public:
 private:
 	void loadDefaults();
 };
+
+}  // namespace TeamRadarTag
 
 #endif // SETTING_H

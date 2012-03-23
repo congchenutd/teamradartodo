@@ -11,6 +11,10 @@
 #include "todooutputpane.h"
 #include "Tag.h"
 
+namespace TeamRadarTag {
+
+class Communicator;
+
 class TodoPlugin : public ExtensionSystem::IPlugin
 {
 	Q_OBJECT
@@ -19,11 +23,12 @@ public:
 	virtual void extensionsInitialized() {}
 	virtual bool initialize(const QStringList& arguments, QString* errorString);
 
-public slots:
+private slots:
 	void onGotoRow(QListWidgetItem*);
 	void onCurrentEditorChanged(Core::IEditor* editor);
 	void onFileChanged();
 	void onProjectChanged(ProjectExplorer::Project*);
+//	void onRemoteTaggingEvent();
 
 private:
 	void readFile(const QString& filePath);
@@ -37,8 +42,12 @@ private:
 private:
 	TodoOutputPane*           outPane;
 	ProjectExplorer::Project* currentProject;
+	Communicator* communicator;
 	TagList tags;
 	bool    reading;
 };
+
+}  // namespace TeamRadarTag
+
 #endif // TODOPLUGIN_H
 

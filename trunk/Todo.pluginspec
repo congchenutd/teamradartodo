@@ -6,5 +6,6 @@
 	<url>http://www.utdallas.edu</url>
 	<dependencyList>
 		<dependency name="Core" version="2.4.1"/>
+		<dependency name="TeamRadar" version="2.4.1"/>
 	</dependencyList>
 </plugin>

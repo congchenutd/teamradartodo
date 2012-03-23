@@ -5,6 +5,8 @@
 #include <coreplugin/dialogs/ioptionspage.h>
 #include "SettingDlg.h"
 
+namespace TeamRadarTag {
+
 class SettingPage: public Core::IOptionsPage
 {
 	Q_OBJECT
@@ -39,5 +41,7 @@ public:
 	QWidget* createPage(QWidget* parent);
 	void apply() {}
 };
+
+}  // namespace TeamRadarTag
 
 #endif // SETTINGPAGE_H

@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QColor>
 
+namespace TeamRadarTag {
+
 // A label for choosing color
 // click to open a color dialog
 class ColorLabel : public QLabel
@@ -23,5 +25,7 @@ signals:
 private:
 	QColor color;
 };
+
+} // namespace TeamRadarTag
 
 #endif // COLORLABEL_H
