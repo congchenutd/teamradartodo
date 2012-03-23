@@ -4,9 +4,15 @@
 #include <QObject>
 #include "TeamRadarEvent.h"
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-class Tag;
+struct TaggingEvent
+{
+	QString userName;
+	QString tag;
+	QString fileName;
+	int     lineNumber;
+};
 
 class Communicator : public QObject
 {
@@ -16,13 +22,13 @@ public:
 	void sendTaggingEvent(const QString& text, const QString& filePath, int row);
 
 signals:
-	void remoteTagging();
+	void remoteTagging(const TaggingEvent&);
 
 private slots:
-	void onTaggingEvent(const TeamRadar::TeamRadarEvent& event);
+//	void onTaggingEvent(const TeamRadar::TeamRadarEvent& event);
 
 };
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
 
 #endif // COMMUNICATOR_H

@@ -1,7 +1,6 @@
-#include "TodoPlugin.h"
-#include "SettingPage.h"
-#include "TodoSetting.h"
-#include "Communicator.h"
+#include "TagPlugin.h"
+#include "TagOptionsPage.h"
+#include "TagSetting.h"
 #include <coreplugin/icore.h>
 #include <coreplugin/ifile.h>
 #include <coreplugin/editormanager/editormanager.h>
@@ -17,49 +16,50 @@
 #include <QSettings>
 #include <QTextCodec>
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-TodoPlugin::TodoPlugin()
+TagPlugin::TagPlugin()
 {
-	qRegisterMetaTypeStreamOperators<Tag>("Tag");
-	qRegisterMetaTypeStreamOperators<TagList>("TagList");
+	qRegisterMetaTypeStreamOperators<TagKeyword> ("TagKeyword");
+	qRegisterMetaTypeStreamOperators<TagKeywords>("TagKeywords");
 }
 
-bool TodoPlugin::initialize(const QStringList& args, QString* errMsg)
+bool TagPlugin::initialize(const QStringList& args, QString* errMsg)
 {
 	Q_UNUSED(args);
 	Q_UNUSED(errMsg);
 	currentProject = 0;
 	reading = false;
 
-	tags = Setting::getInstance()->getTags();
-	addAutoReleasedObject(new SettingPage(this));
-	addAutoReleasedObject(new AboutPage(this));
+	tags = TagSetting::getInstance()->getTags();
+	addAutoReleasedObject(new TagOptionsPage(this));
+	addAutoReleasedObject(new TagAboutPage(this));
 
-	outPane = new TodoOutputPane(this);
+	outPane = new TagOutputPane(this);
 	addAutoReleasedObject(outPane);
 	connect(outPane->getTodoList(), SIGNAL(itemClicked(QListWidgetItem*)),   this, SLOT(onGotoRow(QListWidgetItem*)));
 	connect(outPane->getTodoList(), SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onGotoRow(QListWidgetItem*)));
 
 	communicator = new Communicator(this);
+	connect(communicator, SIGNAL(remoteTagging(TaggingEvent)), this, SLOT(onRemoteTaggingEvent(TaggingEvent)));
 
 	connect(Core::EditorManager::instance(), SIGNAL(currentEditorChanged(Core::IEditor*)), this, SLOT(onCurrentEditorChanged(Core::IEditor*)));
 	connect(ProjectExplorer::ProjectExplorerPlugin::instance(), SIGNAL(currentProjectChanged(ProjectExplorer::Project*)), this, SLOT(onProjectChanged(ProjectExplorer::Project*)));
 	return true;
 }
 
-void TodoPlugin::onGotoRow(QListWidgetItem* item)
+void TagPlugin::onGotoRow(QListWidgetItem* item)
 {
-	QString filePath = item->data(TodoOutputPane::FilePathRole).toString();
+	QString filePath = item->data(TagOutputPane::FilePathRole).toString();
 	if(QFileInfo(filePath).exists())
 	{
 		Core::IEditor* editor = Core::EditorManager::instance()->openEditor(filePath);
-		int row = item->data(TodoOutputPane::LineNumberRole).toInt();
+		int row = item->data(TagOutputPane::LineNumberRole).toInt();
 		editor->gotoLine(row);
 	}
 }
 
-void TodoPlugin::onCurrentEditorChanged(Core::IEditor* editor)
+void TagPlugin::onCurrentEditorChanged(Core::IEditor* editor)
 {
 	if(reading || editor == 0)
 		return;
@@ -67,7 +67,7 @@ void TodoPlugin::onCurrentEditorChanged(Core::IEditor* editor)
 	connect(editor->file(), SIGNAL(changed()), this, SLOT(onFileChanged()));
 }
 
-void TodoPlugin::onFileChanged()
+void TagPlugin::onFileChanged()
 {
 	if(Core::IFile* file = dynamic_cast<Core::IFile*>(sender()))
 	{
@@ -76,19 +76,19 @@ void TodoPlugin::onFileChanged()
 	}
 }
 
-QRegExp TodoPlugin::generatePattern(const Tag& tag) {
+QRegExp TagPlugin::generatePattern(const TagKeyword& tag) {
 	return QRegExp("//\\s*" + tag.name + "(:|\\s)", Qt::CaseInsensitive);
 }
 
-Tag TodoPlugin::findMatchingTag(const QString& line)
+TagKeyword TagPlugin::findMatchingTag(const QString& line)
 {
-	foreach(const Tag& tag, tags)
+	foreach(const TagKeyword& tag, tags)
 		if(line.contains(generatePattern(tag)))
 			return tag;
-	return Tag();
+	return TagKeyword();
 }
 
-void TodoPlugin::formatLine(QString& line, const Tag& tag)
+void TagPlugin::formatLine(QString& line, const TagKeyword& tag)
 {
 	line.replace("\n", "");
 	line.replace("\r", "");
@@ -97,7 +97,7 @@ void TodoPlugin::formatLine(QString& line, const Tag& tag)
 	line = QTextCodec::codecForLocale()->toUnicode(line.toAscii());
 }
 
-void TodoPlugin::readFile(const QString& filePath)
+void TagPlugin::readFile(const QString& filePath)
 {
 	QFile file(filePath);
 	if(!file.open(QFile::ReadOnly | QFile::Text))
@@ -106,7 +106,7 @@ void TodoPlugin::readFile(const QString& filePath)
 	for(int lineNumber = 1; !file.atEnd(); ++lineNumber)
 	{
 		QString line = file.readLine();
-		Tag tag = findMatchingTag(line);
+		TagKeyword tag = findMatchingTag(line);
 		if(tag.isValid())
 		{
 			formatLine(line, tag);
@@ -118,7 +118,7 @@ void TodoPlugin::readFile(const QString& filePath)
 	}
 }
 
-void TodoPlugin::onProjectChanged(ProjectExplorer::Project* project)
+void TagPlugin::onProjectChanged(ProjectExplorer::Project* project)
 {
 	if(project == 0 || reading)
 		return;
@@ -127,11 +127,17 @@ void TodoPlugin::onProjectChanged(ProjectExplorer::Project* project)
 	outPane->clearContents();
 
 	reading = true;
-	QFuture<void> result = QtConcurrent::run(&TodoPlugin::readCurrentProject, this);
+	QFuture<void> result = QtConcurrent::run(&TagPlugin::readCurrentProject, this);
 	Core::ICore::instance()->progressManager()->addTask(result, tr("TodoScan"), "Todo.Plugin.Scanning");
 }
 
-void TodoPlugin::readCurrentProject(QFutureInterface<void>& future, TodoPlugin* instance)
+void TagPlugin::onRemoteTaggingEvent(const TaggingEvent& event)
+{
+	TagKeyword tag = findMatchingTag(event.tag);
+	outPane->addItem(event.tag, event.fileName, event.lineNumber, tag);
+}
+
+void TagPlugin::readCurrentProject(QFutureInterface<void>& future, TagPlugin* instance)
 {
 	QStringList filesList = instance->currentProject->files(
 								ProjectExplorer::Project::ExcludeGeneratedFiles);
@@ -147,8 +153,8 @@ void TodoPlugin::readCurrentProject(QFutureInterface<void>& future, TodoPlugin* 
 	future.reportFinished();
 }
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
 
-Q_EXPORT_PLUGIN(TeamRadarTag::TodoPlugin)
+Q_EXPORT_PLUGIN(TeamRadar::TagPlugin)
 
 

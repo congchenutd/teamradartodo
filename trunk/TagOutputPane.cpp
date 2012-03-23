@@ -1,18 +1,18 @@
-#include "TodoOutputPane.h"
+#include "TagOutputPane.h"
 #include <QListWidget>
 #include <QFileInfo>
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-TodoOutputPane::TodoOutputPane(QObject* parent) : IOutputPane(parent) {
+TagOutputPane::TagOutputPane(QObject* parent) : IOutputPane(parent) {
 	todoList = new QListWidget;
 }
 
-TodoOutputPane::~TodoOutputPane() {
+TagOutputPane::~TagOutputPane() {
 	delete todoList;
 }
 
-void TodoOutputPane::addItem(const QString& text, const QString& filePath, int row, const Tag& tag)
+void TagOutputPane::addItem(const QString& text, const QString& filePath, int row, const TagKeyword& tag)
 {
 	QListWidgetItem* item = new QListWidgetItem;
 	item->setIcon(tag.icon);
@@ -25,12 +25,12 @@ void TodoOutputPane::addItem(const QString& text, const QString& filePath, int r
 }
 
 // clear all
-void TodoOutputPane::clearContents() {
+void TagOutputPane::clearContents() {
 	todoList->clear();
 }
 
 // only clear items from the file
-void TodoOutputPane::clearContents(const QString& filePath)
+void TagOutputPane::clearContents(const QString& filePath)
 {
 	for(int i = 0; i < todoList->count();)
 	{
@@ -42,40 +42,40 @@ void TodoOutputPane::clearContents(const QString& filePath)
 	}
 }
 
-void TodoOutputPane::visibilityChanged(bool visible) {
+void TagOutputPane::visibilityChanged(bool visible) {
 	todoList->setVisible(visible);
 }
 
-void TodoOutputPane::setFocus() {
+void TagOutputPane::setFocus() {
 	todoList->setFocus();
 }
 
-bool TodoOutputPane::hasFocus() const {
+bool TagOutputPane::hasFocus() const {
 	return todoList->hasFocus();
 }
 
-bool TodoOutputPane::canNavigate() const {
+bool TagOutputPane::canNavigate() const {
 	return todoList->count() > 1;
 }
 
-bool TodoOutputPane::canNext() const {
+bool TagOutputPane::canNext() const {
 	return todoList->currentRow() < todoList->count() && todoList->count() > 1;
 }
 
-bool TodoOutputPane::canPrevious() const {
+bool TagOutputPane::canPrevious() const {
 	return todoList->currentRow() > 0 && todoList->count() > 1;
 }
 
-void TodoOutputPane::goToNext() {
+void TagOutputPane::goToNext() {
 	todoList->setCurrentRow(todoList->currentRow() + 1);
 }
 
-void TodoOutputPane::goToPrev() {
+void TagOutputPane::goToPrev() {
 	todoList->setCurrentRow(todoList->currentRow() - 1);
 }
 
-void TodoOutputPane::sort() {
+void TagOutputPane::sort() {
 	todoList->sortItems(Qt::AscendingOrder);
 }
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar

@@ -1,26 +1,26 @@
-#include "SettingPage.h"
-#include "TodoSetting.h"
+#include "TagOptionsPage.h"
+#include "TagSetting.h"
 #include <coreplugin/icore.h>
 #include <QList>
 #include <QMessageBox>
 #include <QLabel>
 
-namespace TeamRadarTag {
+namespace TeamRadar {
 
-QWidget* SettingPage::createPage(QWidget* parent)
+QWidget* TagOptionsPage::createPage(QWidget* parent)
 {
 	settingDirty = false;
 
-	dialog = new SettingDlg(parent);
+	dialog = new TagOptionsDlg(parent);
 	connect(dialog, SIGNAL(settingChanged()), this, SLOT(onSettingChanged()));
 	return dialog;
 }
 
-void SettingPage::apply()
+void TagOptionsPage::apply()
 {
 	if(settingDirty)
 	{
-		Setting::getInstance()->setTags(dialog->getTags());
+		TagSetting::getInstance()->setTags(dialog->getTags());
 
 		QMessageBox::information(dialog, tr("Information"),
 								 tr("The TODO plugin settings change will take effect after a restart of Qt Creator."));
@@ -28,14 +28,14 @@ void SettingPage::apply()
 	}
 }
 
-void SettingPage::onSettingChanged() {
+void TagOptionsPage::onSettingChanged() {
 	settingDirty = true;
 }
 
 //////////////////////////////////////////////////////////////
-AboutPage::AboutPage(QObject* parent) : SettingPage(parent) {}
+TagAboutPage::TagAboutPage(QObject* parent) : TagOptionsPage(parent) {}
 
-QWidget* AboutPage::createPage(QWidget* parent)
+QWidget* TagAboutPage::createPage(QWidget* parent)
 {
 	QWidget* widget = new QWidget(parent);
 	QLabel* label = new QLabel(tr(
@@ -43,10 +43,10 @@ QWidget* AboutPage::createPage(QWidget* parent)
 		"<P align=\"center\">Capturing high-leve awareness with tags</P>"
 		"<P align=\"center\">Cong Chen &lt;CongChenUTD@Gmail.com&gt;</P>"
 		"<P align=\"center\">Built on %1</P>")
-							   .arg(Setting::getInstance()->getCompileDate()), widget);
+							   .arg(TagSetting::getInstance()->getCompileDate()), widget);
 	QHBoxLayout* layout = new QHBoxLayout(widget);
 	layout->addWidget(label);
 	return widget;
 }
 
-}  // namespace TeamRadarTag
+}  // namespace TeamRadar
